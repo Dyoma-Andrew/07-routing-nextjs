@@ -1,6 +1,10 @@
-import { useEffect, useState, type MouseEvent, type ReactNode } from 'react';
+import { useEffect, useSyncExternalStore, type MouseEvent, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import css from './Modal.module.css';
+
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 interface ModalProps {
   onClose: () => void;
@@ -8,9 +12,7 @@ interface ModalProps {
 }
 
 export default function Modal({ onClose, children }: ModalProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => setMounted(true), []);
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
   const handleBackdropClick = (event: MouseEvent<HTMLDivElement>) => {
     if (event.target === event.currentTarget) {
@@ -41,14 +43,14 @@ export default function Modal({ onClose, children }: ModalProps) {
   return createPortal(
     <div className={css.backdrop} onClick={handleBackdropClick} role="dialog" aria-modal="true">
       <div className={css.modal}>
-        <button
+        {/* <button
           className={css.closeButton}
           onClick={onClose}
           aria-label="Close modal"
           type="button"
         >
           &times;
-        </button>
+        </button> */}
 
         {children}
       </div>
